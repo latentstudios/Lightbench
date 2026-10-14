@@ -1,3 +1,6 @@
+## Fixed
+- Version 1.0.1 could fail to start with "Cannot read properties of undefined (reading 'publish')". If you installed 1.0.1, install this version over it — your catalog and edits are kept.
+
 ## What's new
 - **Update notifications** — Lightbench now tells you when a new version is out (once a day, can be turned off).
 - **Send Feedback / Report a Problem** in the Lightbench menu (top-left) — opens a pre-filled GitHub issue or email.

@@ -153,8 +153,9 @@ async function uniquePath(p) {
 
 // ---------- update check ----------
 // Asks GitHub for the latest release (no personal data is sent) and picks the installer for this computer.
+// Note: electron-builder strips the "build" field from the packaged package.json, so the repo is spelled out here.
 const PKG = require('./package.json');
-const REPO = `${PKG.build.publish.owner}/${PKG.build.publish.repo}`;
+const REPO = 'latentstudios/lightbench';
 const newer = (a, b) => { // is version a newer than b?
   const pa = String(a).replace(/^v/, '').split(/[.-]/).map((n) => parseInt(n, 10) || 0), pb = String(b).replace(/^v/, '').split(/[.-]/).map((n) => parseInt(n, 10) || 0);
   for (let i = 0; i < 3; i++) if ((pa[i] || 0) !== (pb[i] || 0)) return (pa[i] || 0) > (pb[i] || 0);

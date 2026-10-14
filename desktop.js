@@ -78,7 +78,7 @@ async function launch() {
     if (response === 1) {
       const pkg = require('./package.json');
       const body = `What were you doing when it happened?\n\n\n---\nLightbench ${pkg.version}\n${process.platform} ${require('os').release()} (${process.arch})\nCrash: ${details.reason}, code ${details.exitCode}`;
-      shell.openExternal(`https://github.com/${pkg.build.publish.owner}/${pkg.build.publish.repo}/issues/new?title=${encodeURIComponent('[Crash] Lightbench stopped unexpectedly')}&body=${encodeURIComponent(body)}`);
+      shell.openExternal(`https://github.com/latentstudios/lightbench/issues/new?title=${encodeURIComponent('[Crash] Lightbench stopped unexpectedly')}&body=${encodeURIComponent(body)}`);
     }
     if (response === 2) { flushed = true; app.quit(); } else if (win) win.reload();
   });
