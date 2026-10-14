@@ -198,9 +198,13 @@ $('.brand').addEventListener('click', (e) => contextMenu(e.clientX, e.clientY + 
   { label: 'Welcome Guide', action: () => showWelcome({ openImport }) },
   { label: 'Keyboard Shortcuts', key: '?', action: showHelp },
   { label: 'Send Feedback / Report a Problem…', action: () => showFeedback() },
+  { label: 'Get Help on Discord', action: () => window.open('https://discord.gg/QrBpnTrtP', '_blank', 'noopener') },
+  { label: 'Email Support', action: () => window.open('mailto:latentstudios.hq@gmail.com?subject=' + encodeURIComponent('Lightbench help'), '_blank', 'noopener') },
   { label: 'AI Models…', action: () => import('./models.js').then((m) => m.showModels()) },
   { label: 'Check for Updates…', action: () => checkForUpdates({ manual: true }) },
   { label: 'About & Licenses…', action: () => showAbout() },
+  '-',
+  { label: 'Support Lightbench ☕', action: () => window.open('https://buymeacoffee.com/latentstudios', '_blank', 'noopener') },
 ]));
 $('.brand').style.cursor = 'pointer';
 

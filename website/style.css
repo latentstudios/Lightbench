@@ -77,6 +77,57 @@ ul.ticks li::before { content: ""; position: absolute; left: 0; top: 8px; width:
 .dl p { margin: 0; color: #a5a5a5; font-size: 14px; }
 .dl .btn { justify-content: center; margin-top: auto; }
 .req { color: var(--dim); font-size: 13px; }
+.dl p.mac-note { font-size: 13px; color: var(--dim); }
+
+/* support */
+.nav nav a.support-link { color: var(--accent2); }
+.support-card { display: flex; align-items: center; gap: 40px; background: linear-gradient(135deg, rgba(232,163,61,.10), rgba(232,163,61,.02) 60%), var(--panel); border: 1px solid rgba(232,163,61,.35); border-radius: var(--radius); padding: 36px 40px; }
+.support-text { flex: 1; min-width: 0; }
+.support-logo { width: 160px; height: 160px; flex: none; }
+.goal { margin: 22px 0 0; max-width: 520px; }
+.goal-head { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; margin-bottom: 8px; }
+.goal-head b { color: var(--bright); font-weight: 600; }
+.goal-head span { color: var(--accent2); font-weight: 600; white-space: nowrap; }
+.goal-bar { height: 10px; background: #2a2a2a; border-radius: 6px; overflow: hidden; }
+.goal-bar div { height: 100%; width: 0; background: linear-gradient(90deg, #d9822c, var(--accent2)); border-radius: 6px; transition: width .6s; }
+.btn.coffee { margin-top: 24px; font-size: 16px; }
+@media (max-width: 720px) { .support-card { flex-direction: column-reverse; align-items: flex-start; padding: 26px 22px; gap: 18px; } .support-logo { width: 72px; height: 72px; } }
+
+/* install guide pop-up */
+.guide-back { position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,.65); display: flex; align-items: center; justify-content: center; padding: 16px; animation: gfade .15s ease-out; }
+@keyframes gfade { from { opacity: 0; } }
+.guide { position: relative; background: #1d1d1d; border: 1px solid #333; border-radius: var(--radius); box-shadow: 0 30px 80px rgba(0,0,0,.6); width: min(760px, 100%); max-height: calc(100vh - 32px); overflow: auto; padding: 26px 28px 22px; }
+.guide h3 { color: var(--bright); font-size: 22px; margin: 4px 0 4px; }
+.guide-x { position: absolute; top: 10px; right: 12px; background: none; border: 0; color: var(--dim); font-size: 26px; cursor: pointer; line-height: 1; }
+.guide-x:hover { color: var(--bright); }
+.guide-started { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: #8fd28f; background: rgba(110,190,110,.12); border: 1px solid rgba(110,190,110,.3); padding: 4px 10px; border-radius: 20px; }
+.guide-started span { font-weight: 700; }
+.guide-lead { margin: 0 0 16px; color: #aaa; }
+.guide-body { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; align-items: start; }
+.guide ol { margin: 0; padding-left: 22px; } .guide ol li { margin: 0 0 10px; color: var(--text); }
+.guide ol b { color: var(--bright); }
+.guide-mocks { display: flex; flex-direction: column; gap: 10px; }
+.guide-extra { font-size: 13px; color: #9a9a9a; margin: 14px 0 0; }
+.guide-extra kbd { display: inline-block; margin-top: 4px; word-break: break-all; }
+.guide-why { font-size: 13px; color: var(--dim); margin: 14px 0 0; }
+.guide-foot { display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+.guide-foot .btn { padding: 10px 18px; font-size: 14px; }
+.btn.discord { background: #5865f2; color: #fff; }
+@media (max-width: 640px) { .guide-body { grid-template-columns: 1fr; } .guide { padding: 22px 18px 18px; } }
+/* mock-ups of the system warnings */
+.mock { border-radius: 8px; padding: 14px 16px; font-size: 12px; line-height: 1.45; user-select: none; }
+.mock p { margin: 0 0 8px; } .mock .small { font-size: 11.5px; }
+.mock .hl { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+.mock.win { background: #0b5cad; color: #fff; font-family: "Segoe UI", sans-serif; }
+.mock-win-title { font-size: 17px; font-weight: 300; margin-bottom: 8px; }
+.mock.win .mock-link span { text-decoration: underline; }
+.mock-win-btns, .mock-mac-btns { display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; }
+.mock.win .mock-btn { border: 1px solid #fff; padding: 4px 14px; }
+.mock.mac { background: #ececec; color: #222; text-align: center; font-family: -apple-system, "SF Pro Text", sans-serif; }
+.mock.mac.settings { text-align: left; }
+.mock-mac-icon { width: 30px; height: 30px; margin: 0 auto 6px; border-radius: 50%; background: #f5b325; color: #fff; font-weight: 800; display: grid; place-items: center; }
+.mock.mac .mock-btn { background: #fff; border: 1px solid #c8c8c8; border-radius: 6px; padding: 3px 12px; }
+.mock.mac .mock-mac-btns { justify-content: center; } .mock.mac.settings .mock-mac-btns { justify-content: flex-start; }
 
 /* FAQ */
 details { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 18px; margin: 10px 0; }

@@ -432,13 +432,26 @@ export function radialTool(D, mask) {
     const W = D.viewer.engine.W, H = D.viewer.engine.H, L = long();
     const ca = Math.cos(R.angle || 0), sa = Math.sin(R.angle || 0);
     const toRaw = (ox, oy) => [R.cx + (ca * ox - sa * oy) * L / W, R.cy + (sa * ox + ca * oy) * L / H];
-    return { c: v.rawToCanvas(R.cx, R.cy), e: v.rawToCanvas(...toRaw(R.rx, 0)), w: v.rawToCanvas(...toRaw(-R.rx, 0)), s: v.rawToCanvas(...toRaw(0, R.ry)), n: v.rawToCanvas(...toRaw(0, -R.ry)) };
+    const h = { c: v.rawToCanvas(R.cx, R.cy), e: v.rawToCanvas(...toRaw(R.rx, 0)), w: v.rawToCanvas(...toRaw(-R.rx, 0)), s: v.rawToCanvas(...toRaw(0, R.ry)), n: v.rawToCanvas(...toRaw(0, -R.ry)) };
+    // rotation knob: on a short stem beyond the top handle, following the ellipse's rotation
+    const dx = h.n[0] - h.c[0], dy = h.n[1] - h.c[1], len = Math.hypot(dx, dy) || 1, stem = 30 * dpr();
+    h.rot = [h.n[0] + (dx / len) * stem, h.n[1] + (dy / len) * stem];
+    return h;
+  };
+  t.cursorAt = (e, v) => {
+    const H = handles(v); if (!H) return null;
+    const r = v.canvas.getBoundingClientRect(), mx = (e.clientX - r.left) * dpr(), my = (e.clientY - r.top) * dpr();
+    if (Math.hypot(mx - H.rot[0], my - H.rot[1]) < 11 * dpr()) return 'grab';
+    if (Math.hypot(mx - H.c[0], my - H.c[1]) < 14 * dpr()) return 'move';
+    for (const k of ['e', 'w', 'n', 's']) if (Math.hypot(mx - H[k][0], my - H[k][1]) < 10 * dpr()) return 'pointer';
+    return null;
   };
   t.down = (e, v) => {
     const [rx, ry] = v.clientToRaw(e.clientX, e.clientY);
     const r = v.canvas.getBoundingClientRect(), mx = (e.clientX - r.left) * dpr(), my = (e.clientY - r.top) * dpr();
     const H = handles(v);
     if (H) {
+      if (Math.hypot(mx - H.rot[0], my - H.rot[1]) < 11 * dpr()) { drag = { mode: 'rot' }; return; }
       for (const k of ['e', 'w', 'n', 's']) if (Math.hypot(mx - H[k][0], my - H[k][1]) < 10 * dpr()) { drag = { mode: k, shift: e.shiftKey }; return; }
       if (Math.hypot(mx - H.c[0], my - H.c[1]) < 14 * dpr()) { drag = { mode: 'move', start: [rx, ry], orig: { ...mask.radial } }; return; }
     }
@@ -454,11 +467,18 @@ export function radialTool(D, mask) {
     const dxp = (rx - R.cx) * W / L, dyp = (ry - R.cy) * H / L; // offset in long-side units
     if (drag.mode === 'new') { R.rx = Math.max(0.005, Math.abs(dxp)); R.ry = Math.max(0.005, Math.abs(dyp)); if (e.shiftKey) R.rx = R.ry = Math.max(R.rx, R.ry); }
     else if (drag.mode === 'move') { R.cx = drag.orig.cx + rx - drag.start[0]; R.cy = drag.orig.cy + ry - drag.start[1]; }
+    else if (drag.mode === 'rot') {
+      // the knob sits on the ellipse's local "up" axis, so its direction is angle − 90°
+      let a = Math.atan2(dyp, dxp) + Math.PI / 2;
+      if (e.shiftKey) a = Math.round(a / (Math.PI / 12)) * (Math.PI / 12); // Shift: snap to 15°
+      R.angle = Math.atan2(Math.sin(a), Math.cos(a)); // keep within −180°…180°
+      D.onRadialAngle && D.onRadialAngle(R.angle);
+    }
     else {
       const ca = Math.cos(R.angle || 0), sa = Math.sin(R.angle || 0);
       const lx = ca * dxp + sa * dyp, ly = -sa * dxp + ca * dyp;
       if (drag.mode === 'e' || drag.mode === 'w') {
-        if ((e.ctrlKey || e.metaKey)) R.angle = Math.atan2(dyp, dxp) + (drag.mode === 'w' ? Math.PI : 0);
+        if ((e.ctrlKey || e.metaKey)) { R.angle = Math.atan2(dyp, dxp) + (drag.mode === 'w' ? Math.PI : 0); R.angle = Math.atan2(Math.sin(R.angle), Math.cos(R.angle)); D.onRadialAngle && D.onRadialAngle(R.angle); }
         else R.rx = Math.max(0.005, Math.abs(lx));
       } else R.ry = Math.max(0.005, Math.abs(ly));
       if (e.shiftKey) R.rx = R.ry = drag.mode === 'e' || drag.mode === 'w' ? R.rx : R.ry;
@@ -468,7 +488,7 @@ export function radialTool(D, mask) {
   t.up = () => {
     if (!drag) return;
     if (drag.mode === 'new' && mask.radial.rx < 0.006 && mask.radial.ry < 0.006) { mask.radial = drag.prev || null; D.update(); drag = null; return; } // a click, not a drag
-    D.commit('Radial Gradient');
+    D.commit(drag.mode === 'rot' ? 'Rotate Radial Gradient' : 'Radial Gradient');
     if (drag.mode === 'new') { t.redraw = false; t.onDrawn && t.onDrawn(); }
     drag = null;
   };
@@ -491,6 +511,16 @@ export function radialTool(D, mask) {
     c.setLineDash([]);
     for (const k of ['e', 'w', 'n', 's']) { c.fillStyle = '#fff'; c.fillRect(H[k][0] - 4 * dpr(), H[k][1] - 4 * dpr(), 8 * dpr(), 8 * dpr()); }
     c.beginPath(); c.arc(H.c[0], H.c[1], 6 * dpr(), 0, Math.PI * 2); c.fill();
+    // rotation knob: stem + ring with a small curved arrow
+    c.strokeStyle = 'rgba(255,255,255,.9)'; c.lineWidth = 1.2 * dpr();
+    c.beginPath(); c.moveTo(H.n[0], H.n[1]); c.lineTo(H.rot[0], H.rot[1]); c.stroke();
+    c.fillStyle = 'rgba(30,30,30,.85)'; c.beginPath(); c.arc(H.rot[0], H.rot[1], 8 * dpr(), 0, Math.PI * 2); c.fill();
+    c.strokeStyle = '#fff'; c.lineWidth = 1.5 * dpr();
+    c.beginPath(); c.arc(H.rot[0], H.rot[1], 8 * dpr(), 0, Math.PI * 2); c.stroke();
+    const ar = 4 * dpr(), a0 = -Math.PI * 0.9, a1 = Math.PI * 0.35;
+    c.beginPath(); c.arc(H.rot[0], H.rot[1], ar, a0, a1); c.stroke();
+    const tx = H.rot[0] + Math.cos(a1) * ar, ty = H.rot[1] + Math.sin(a1) * ar;
+    c.beginPath(); c.moveTo(tx - 2.5 * dpr(), ty - 0.5 * dpr()); c.lineTo(tx, ty); c.lineTo(tx + 0.5 * dpr(), ty - 2.8 * dpr()); c.stroke();
   };
   return t;
 }

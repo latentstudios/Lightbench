@@ -244,6 +244,7 @@ class Viewer {
         return;
       }
       if (this.tool?.hover) this.tool.hover(e, this);
+      if (this.tool?.cursorAt && !this.spaceDown) ov.style.cursor = this.tool.cursorAt(e, this) || this.tool.cursor || ''; // handle-specific cursors
       this.lastMouse = [e.clientX, e.clientY];
       emit('pixel', e);
     });

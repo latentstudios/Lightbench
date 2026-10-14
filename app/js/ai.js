@@ -17,9 +17,10 @@ function getWorker() {
       else dl.set(d.model + d.file, { model: d.model, loaded: d.loaded, total: d.total });
       const items = [...dl.values()];
       if (items.length) {
-        if (!dlAct) dlAct = activity('Downloading AI model…');
+        if (!dlAct) dlAct = activity('Loading AI model…');
         const L = items.reduce((a, b) => a + b.loaded, 0), T = items.reduce((a, b) => a + b.total, 0);
-        dlAct.update(`Downloading ${items[0].model} — ${(L / 1048576).toFixed(0)} / ${(T / 1048576).toFixed(0)} MB (one-time)`, L / T);
+        // the same progress fires whether the file comes from disk (fast) or the internet (first time only)
+        dlAct.update(`Loading ${items[0].model} — ${(L / 1048576).toFixed(0)} / ${(T / 1048576).toFixed(0)} MB`, L / T);
         if (L >= T) { for (const [k, v] of dl) if (v.loaded >= v.total) dl.delete(k); }
       }
       if (!dl.size && dlAct) { dlAct.done(); dlAct = null; }

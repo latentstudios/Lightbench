@@ -511,8 +511,15 @@ function renderMaskPanel(box) {
     el('button', { class: 'btn small' + (D.maskEdit === mode ? ' active' : ''), onclick: () => setMaskEdit(D.maskEdit === mode ? null : mode) }, icon(D.maskEdit === mode ? 'x' : ic), D.maskEdit === mode ? 'Cancel' : label),
     el('span', { class: 'muted small', style: { alignSelf: 'center' } }, D.maskEdit === mode ? hint : ''));
   if (m.kind === 'radial') {
-    if (m.radial) ref.append(O_(() => activeMask()?.radial, 'feather', 'Feather', { min: 0, max: 1, step: 0.01, def: 0.5, hist: 'Radial Feather' }));
-    ref.append(el('div', { class: 'muted small' }, m.radial ? 'Drag the handles to resize, the center to move (Shift = circle, Ctrl+drag a side handle = rotate).' : 'Drag on the photo to draw the gradient.'));
+    if (m.radial) {
+      ref.append(O_(() => activeMask()?.radial, 'feather', 'Feather', { min: 0, max: 1, step: 0.01, def: 0.5, hist: 'Radial Feather' }));
+      // Angle in degrees, backed by the mask's radians; kept in sync while the rotation knob is dragged.
+      const deg = () => { const R = activeMask()?.radial; return R && { get angle() { return Math.round(((R.angle || 0) * 180) / Math.PI); }, set angle(v) { R.angle = (v * Math.PI) / 180; } }; };
+      const angleEl = O_(deg, 'angle', 'Angle', { min: -180, max: 180, step: 1, def: 0, hist: 'Rotate Radial Gradient', fmt: (v) => `${Math.round(v)}°` });
+      ref.append(angleEl);
+      D.onRadialAngle = (a) => { const inp = angleEl.querySelector('input[type=range]'), num = angleEl.querySelector('input:not([type=range]), .val'); const v = Math.round((a * 180) / Math.PI); if (inp) inp.value = v; if (num) ('value' in num ? (num.value = v + '°') : (num.textContent = v + '°')); };
+    }
+    ref.append(el('div', { class: 'muted small' }, m.radial ? 'Drag the square handles to resize, the center to move, and the round knob to rotate (Shift = circle / snap to 15°).' : 'Drag on the photo to draw the gradient.'));
     if (m.radial) ref.append(armed('Redraw', 'redraw', 'drag on the photo'));
   }
   if (m.kind === 'linear') {
