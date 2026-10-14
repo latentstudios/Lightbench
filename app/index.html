@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="lightbench-token" content="%%TOKEN%%">
+<title>Lightbench</title>
+<link rel="icon" href="img/logo.svg">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header id="topbar">
+  <div class="brand"><img class="logo" src="img/logo.svg" alt=""><span>Lightbench</span><small id="catalog-status">Catalog</small></div>
+  <div id="activity"><div id="activity-text"></div><div class="bar"><div id="activity-bar"></div></div></div>
+  <nav id="modules">
+    <button data-module="library" class="active">Library</button><span>|</span>
+    <button data-module="develop">Develop</button><span>|</span>
+    <button data-module="map">Map</button><span>|</span>
+    <button data-module="slideshow">Slideshow</button><span>|</span>
+    <button data-module="print">Print</button>
+  </nav>
+</header>
+
+<div id="main">
+  <aside id="left" class="side"><div class="side-scroll" id="left-panels"></div></aside>
+  <div class="edge-toggle left" data-toggle="left" title="Hide/show left panel (F7)"><svg class="ic sm" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></div>
+  <section id="center">
+    <div id="filterbar" class="hidden"></div>
+    <div id="view">
+      <div id="grid" class="pane"></div>
+      <div id="loupe" class="pane hidden"><canvas id="loupe-canvas"></canvas><canvas id="overlay-canvas"></canvas><div id="loupe-info"></div><div id="ba-label" class="hidden"></div></div>
+      <div id="compare" class="pane hidden">
+        <div class="cmp-side"><div class="cmp-tag">Select</div><canvas id="cmp-a"></canvas></div>
+        <div class="cmp-side"><div class="cmp-tag">Candidate</div><canvas id="cmp-b"></canvas></div>
+      </div>
+      <div id="survey" class="pane hidden"></div>
+      <div id="map" class="pane hidden"><div id="map-el"></div></div>
+      <div id="slideshow" class="pane hidden"></div>
+      <div id="print" class="pane hidden"><div id="print-page"></div></div>
+      <div id="empty" class="pane hidden"></div>
+    </div>
+    <div id="toolbar"></div>
+  </section>
+  <div class="edge-toggle right" data-toggle="right" title="Hide/show right panel (F8)"><svg class="ic sm" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+  <aside id="right" class="side"><div class="side-scroll" id="right-panels"></div></aside>
+</div>
+
+<footer id="bottom">
+  <div id="film-info"></div>
+  <div id="filmstrip"></div>
+</footer>
+
+<div id="modal-root"></div>
+<div id="toasts"></div>
+<div id="dropzone" class="hidden"><div>Drop photos to import (copied into the Lightbench Imports folder)</div></div>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

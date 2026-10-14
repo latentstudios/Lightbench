@@ -1,0 +1,45 @@
+LIGHTBENCH — END USER LICENSE AGREEMENT
+
+Copyright (c) 2026 Latent Studios. All rights reserved.
+
+By installing or using Lightbench ("the Software") you agree to these terms.
+
+1. LICENSE GRANT
+   You may install and use the Software on any number of computers, for personal or
+   commercial purposes (for example, editing photos you sell), free of charge.
+
+2. RESTRICTIONS
+   You may not:
+   a) sell, rent, lease or sublicense the Software itself;
+   b) redistribute modified versions of the Software, or present it as your own product;
+   c) remove or alter copyright notices, this agreement, or the third-party notices.
+   Unmodified copies of the official installer may be shared free of charge.
+
+3. THIRD-PARTY COMPONENTS
+   The Software includes open-source components and downloads AI models that are licensed
+   to you under their own terms (MIT, Apache-2.0, BSD, ISC, CDDL/LGPL). Those terms are
+   listed in THIRD_PARTY_NOTICES.md, are available inside the app (Lightbench menu → About &
+   Licenses), and take precedence over this agreement for those components. Nothing in
+   this agreement restricts rights you have under those licenses.
+
+4. YOUR PHOTOS
+   The Software works on your files locally. You keep all rights to your photos and edits.
+   The Software never modifies your original files; edits are stored in its catalog.
+
+5. NO WARRANTY
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+   INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+   PARTICULAR PURPOSE AND NON-INFRINGEMENT. Keep backups of your photos and catalog.
+
+6. LIMITATION OF LIABILITY
+   TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT SHALL LATENT STUDIOS BE LIABLE FOR ANY
+   CLAIM, DAMAGES (INCLUDING LOSS OF DATA OR PROFITS) OR OTHER LIABILITY ARISING FROM THE
+   USE OF OR INABILITY TO USE THE SOFTWARE.
+
+7. TRADEMARKS
+   "Lightbench" and the Lightbench logo are trademarks of Latent Studios. Other product names mentioned are the
+   property of their respective owners; Lightbench is not affiliated with or endorsed by them.
+
+8. TERMINATION
+   This license ends automatically if you break these terms. On termination you must stop
+   using and delete the Software.

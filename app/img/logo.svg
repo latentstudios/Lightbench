@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2a2a2e"/>
+      <stop offset="1" stop-color="#131315"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.44" r="0.5">
+      <stop offset="0" stop-color="#f6b553" stop-opacity="0.42"/>
+      <stop offset="0.6" stop-color="#e8963a" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#e8963a" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="lens" x1="0.2" y1="0.05" x2="0.8" y2="0.95">
+      <stop offset="0" stop-color="#ffe0a0"/>
+      <stop offset="0.55" stop-color="#f3b04f"/>
+      <stop offset="1" stop-color="#d9822c"/>
+    </linearGradient>
+    <linearGradient id="bench" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#d9822c"/>
+      <stop offset="0.5" stop-color="#f6c06a"/>
+      <stop offset="1" stop-color="#d9822c"/>
+    </linearGradient>
+    <clipPath id="lensClip"><circle cx="512" cy="440" r="236"/></clipPath>
+  </defs>
+
+  <!-- tile -->
+  <rect width="1024" height="1024" rx="228" fill="url(#tile)"/>
+  <circle cx="512" cy="450" r="440" fill="url(#glow)"/>
+
+  <!-- aperture (the light) -->
+  <circle cx="512" cy="440" r="236" fill="url(#lens)"/>
+  <g clip-path="url(#lensClip)" stroke="#1d1d20" stroke-width="20" stroke-linecap="round">
+    <!-- six blades: each line runs from a vertex of the central hexagon out past the rim -->
+    <line x1="584" y1="440" x2="652" y2="200"/>
+    <line x1="548" y1="502" x2="788" y2="560"/>
+    <line x1="476" y1="502" x2="612" y2="716"/>
+    <line x1="440" y1="440" x2="372" y2="680"/>
+    <line x1="476" y1="378" x2="236" y2="320"/>
+    <line x1="548" y1="378" x2="412" y2="164"/>
+  </g>
+  <polygon points="584,440 548,502 476,502 440,440 476,378 548,378" fill="#1d1d20"/>
+
+  <!-- the bench -->
+  <rect x="196" y="742" width="632" height="62" rx="31" fill="url(#bench)"/>
+  <rect x="268" y="790" width="46" height="96" rx="16" fill="#b8702a"/>
+  <rect x="710" y="790" width="46" height="96" rx="16" fill="#b8702a"/>
+</svg>
