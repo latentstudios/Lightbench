@@ -57,10 +57,20 @@
       .then((rel) => {
         if (!rel) return;
         setVersion(String(rel.tag_name || '').replace(/^v/, '') || cfg.version);
+        const names = new Set((rel.assets || []).map((x) => x.name));
         for (const asset of rel.assets || []) {
           const a = document.querySelector(`a[data-file="${asset.name}"] [data-size]`);
           if (a) a.textContent = `(${Math.round(asset.size / 1048576)} MB)`;
         }
+        // A build that isn't in this release yet (e.g. the Mac one) — don't offer a dead link.
+        document.querySelectorAll('a[data-file]').forEach((a) => {
+          if (names.has(a.dataset.file)) return;
+          a.removeAttribute('href');
+          a.classList.add('unavailable');
+          a.title = 'Coming soon';
+          const s = a.querySelector('[data-size]');
+          if (s) s.textContent = '(coming soon)';
+        });
       })
       .catch(() => {});
   }

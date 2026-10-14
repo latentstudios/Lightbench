@@ -28,6 +28,7 @@ img { max-width: 100%; height: auto; display: block; }
 .btn { display: inline-flex; align-items: center; gap: 10px; padding: 13px 22px; border-radius: 10px; font-weight: 600; font-size: 15px; border: 1px solid transparent; cursor: pointer; white-space: nowrap; }
 .btn:hover { text-decoration: none; filter: brightness(1.08); }
 .btn.primary { background: var(--accent); color: #1a1205; }
+.btn.unavailable { opacity: .45; cursor: default; filter: none; }
 .btn.ghost { border-color: #3a3a3a; color: var(--bright); background: #1c1c1c; }
 .btn svg { width: 20px; height: 20px; fill: currentColor; }
 .btn small { font-weight: 400; opacity: .75; }

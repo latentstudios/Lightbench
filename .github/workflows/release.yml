@@ -45,6 +45,9 @@ jobs:
 
   release:
     needs: build
+    # Publish whatever built, so a slow/unavailable Mac runner never blocks the Windows release.
+    # "Re-run failed jobs" later adds the Mac files to the same release.
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -62,3 +65,4 @@ jobs:
           name: Lightbench ${{ steps.ver.outputs.version }}
           make_latest: true
           files: out/*
+          fail_on_unmatched_files: true
