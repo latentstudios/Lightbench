@@ -8,7 +8,7 @@ export default mod;
 let L = null, map = null, layer = null;
 
 async function ensureMap() {
-  if (!L) L = await import('https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet-src.esm.js');
+  if (!L) L = await import('../vendor/leaflet/leaflet-src.esm.js'); // Leaflet 1.9.4, bundled
   if (map) { map.invalidateSize(); return; }
   map = L.map($('#map-el'), { zoomControl: true, worldCopyJump: true }).setView([20, 0], 2);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap contributors' }).addTo(map);

@@ -121,6 +121,91 @@ async function streamFile(req, res, file, type) {
   }
 }
 
+// ---------- AI model store ----------
+// Models are downloaded once into MODELS_DIR and served from there, so every AI feature works offline afterwards.
+//   /models/hf/<org>/<repo>/resolve/main/<file>  ← huggingface.co (allow-listed repos only)
+//   /models/gh/<file>                            ← Lightbench's own optimized models (GitHub release "models-v1")
+const MODELS_DIR = process.env.LIGHTBENCH_MODELS || path.join(DATA_DIR, 'models');
+const MODELS_TAG = 'models-v1';
+const HF_REPOS = new Set(['imgly/isnet-general-onnx', 'Xenova/detr-resnet-50-panoptic', 'Xenova/slimsam-77-uniform', 'Xenova/clip-vit-base-patch32', 'Heliosoph/scunet-onnx']);
+function modelTarget(rel) {
+  let m = /^hf\/([\w.-]+\/[\w.-]+)\/resolve\/main\/((?:[\w.-]+\/)*[\w.-]+)$/.exec(rel);
+  if (m && HF_REPOS.has(m[1]) && !m[2].includes('..')) return { url: `https://huggingface.co/${m[1]}/resolve/main/${m[2]}`, file: path.join(MODELS_DIR, 'hf', m[1], m[2]) };
+  m = /^gh\/([\w-]+(?:\.[\w-]+)+)$/.exec(rel);
+  if (m) return { url: `https://github.com/latentstudios/lightbench/releases/download/${MODELS_TAG}/${m[1]}`, file: path.join(MODELS_DIR, 'gh', m[1]) };
+  return null;
+}
+const inflight = new Map(); // file → { promise, loaded, total }
+// Download a model file to disk (once, even if requested concurrently). `tee` also streams it to an HTTP response.
+function fetchModel(t, tee) {
+  if (inflight.has(t.file)) return inflight.get(t.file).promise;
+  const state = { loaded: 0, total: 0 };
+  state.promise = (async () => {
+    if (process.env.LIGHTBENCH_OFFLINE) throw new TypeError('fetch failed (offline mode)'); // for testing offline behaviour
+    const r = await fetch(t.url, { headers: { 'User-Agent': 'Lightbench/' + PKG.version } });
+    if (!r.ok) { const e = new Error(`download failed (${r.status})`); e.status = r.status; throw e; }
+    state.total = Number(r.headers.get('content-length')) || 0;
+    if (tee) tee.writeHead(200, { 'Content-Type': 'application/octet-stream', 'Cache-Control': 'no-store', ...(state.total ? { 'Content-Length': state.total } : {}) });
+    await fsp.mkdir(path.dirname(t.file), { recursive: true });
+    const part = t.file + '.part', out = fs.createWriteStream(part);
+    try {
+      for await (const chunk of r.body) {
+        state.loaded += chunk.length;
+        if (!out.write(chunk)) await new Promise((ok) => out.once('drain', ok));
+        if (tee && !tee.destroyed) tee.write(chunk);
+      }
+      await new Promise((ok, bad) => out.end((e) => (e ? bad(e) : ok())));
+      if (state.total && state.loaded !== state.total) throw new Error('download was interrupted');
+      await fsp.rename(part, t.file);
+    } catch (e) { out.destroy(); await fsp.rm(part, { force: true }); throw e; }
+    finally { if (tee && !tee.writableEnded) tee.end(); }
+  })();
+  inflight.set(t.file, state);
+  state.promise.finally(() => inflight.delete(t.file)).catch(() => {});
+  return state.promise;
+}
+async function serveModel(req, res, rel) {
+  const t = modelTarget(rel);
+  if (!t) return send(res, 404, { error: 'unknown model file' });
+  if (fs.existsSync(t.file)) return streamFile(req, res, t.file, 'application/octet-stream');
+  try {
+    if (inflight.has(t.file)) await inflight.get(t.file).promise;
+    else { await fetchModel(t, res); return; }
+    return streamFile(req, res, t.file, 'application/octet-stream');
+  } catch (e) {
+    if (res.headersSent) return res.destroy();
+    return send(res, e.status === 404 ? 404 : 503, { error: e.status ? e.message : 'offline — this AI model has not been downloaded yet' });
+  }
+}
+// Background "download for offline use" job, driven by the app's model list.
+const job = { files: [], index: 0, error: null, running: false, cancelled: false, doneBytes: 0 };
+async function runJob() {
+  if (job.running) return;
+  job.running = true; job.error = null; job.cancelled = false;
+  try {
+    for (; job.index < job.files.length && !job.cancelled; job.index++) {
+      const t = modelTarget(job.files[job.index]);
+      if (!t || fs.existsSync(t.file)) continue;
+      let tries = 0;
+      for (;;) {
+        try { await fetchModel(t); break; }
+        catch (e) { if (++tries >= 3 || e.status === 404) throw new Error(`${path.basename(t.file)}: ${e.message}`); await new Promise((ok) => setTimeout(ok, 2000 * tries)); }
+      }
+    }
+  } catch (e) { job.error = /fetch failed|ENOTFOUND|ECONN/.test(e.message) ? 'No internet connection' : e.message; }
+  finally { job.running = false; }
+}
+function modelStatus(files) {
+  const out = {};
+  for (const rel of files) {
+    const t = modelTarget(rel); if (!t) continue;
+    const st = fs.existsSync(t.file) ? fs.statSync(t.file) : null;
+    const fl = inflight.get(t.file);
+    out[rel] = { have: !!st, size: st ? st.size : 0, loading: fl ? fl.loaded : 0, total: fl ? fl.total : 0 };
+  }
+  return { dir: MODELS_DIR, files: out, job: { running: job.running, error: job.error, index: job.index, count: job.files.length, current: job.files[job.index] || null } };
+}
+
 async function listDir(dir) {
   const ents = await fsp.readdir(dir, { withFileTypes: true });
   const dirs = [], images = [];
@@ -199,6 +284,37 @@ async function api(req, res, url) {
       version: PKG.version, platform: process.platform, arch: process.arch, osRelease: os.release(), electron: process.versions.electron || '' });
   }
   if (route === 'update-check') return send(res, 200, await checkForUpdate());
+  if (route === 'models/status' && req.method === 'POST') return send(res, 200, modelStatus(JSON.parse((await readBody(req)).toString('utf8'))));
+  if (route === 'models/download' && req.method === 'POST') {
+    const files = JSON.parse((await readBody(req)).toString('utf8')).filter((f) => modelTarget(f));
+    if (!job.running) { job.files = files; job.index = 0; } else for (const f of files) if (!job.files.includes(f)) job.files.push(f);
+    runJob();
+    return send(res, 200, modelStatus(job.files));
+  }
+  if (route === 'models/probe') { // is this model file available (downloaded, or online)?
+    const t = modelTarget(q.get('rel') || '');
+    if (!t) return send(res, 200, { ok: false });
+    if (fs.existsSync(t.file)) return send(res, 200, { ok: true, local: true });
+    try { const r = await fetch(t.url, { method: 'HEAD', redirect: 'follow', signal: AbortSignal.timeout(8000) }); return send(res, 200, { ok: r.ok }); }
+    catch { return send(res, 200, { ok: false, offline: true }); }
+  }
+  if (route === 'models/cancel' && req.method === 'POST') { job.cancelled = true; return send(res, 200, { ok: true }); }
+  if (route === 'models/delete' && req.method === 'POST') {
+    if (job.running || inflight.size) return send(res, 409, { error: 'A download is in progress' });
+    await fsp.rm(MODELS_DIR, { recursive: true, force: true });
+    return send(res, 200, { ok: true });
+  }
+  // One-time move of models from the old browser cache into the model store.
+  if (route === 'models/import' && req.method === 'PUT') {
+    const t = modelTarget(q.get('rel') || '');
+    if (!t) return send(res, 400, { error: 'unknown model file' });
+    if (!fs.existsSync(t.file)) {
+      await fsp.mkdir(path.dirname(t.file), { recursive: true });
+      await fsp.writeFile(t.file + '.part', await readBody(req, 2 * 1024 * 1024 * 1024));
+      await fsp.rename(t.file + '.part', t.file);
+    }
+    return send(res, 200, { ok: true });
+  }
   if (route === 'drives') {
     const drives = [];
     if (process.platform === 'win32') {
@@ -283,6 +399,12 @@ const server = http.createServer(async (req, res) => {
     const host = (req.headers.host || '').toLowerCase();
     if (host !== `127.0.0.1:${PORT}` && host !== `localhost:${PORT}`) return send(res, 403, 'forbidden host', 'text/plain');
     const url = new URL(req.url, `http://${host}`);
+    // Cross-origin isolation lets the AI use all CPU cores (SharedArrayBuffer → multi-threaded WebAssembly).
+    // "credentialless" still allows the Map module's OpenStreetMap tiles.
+    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+    res.setHeader('Cross-Origin-Embedder-Policy', 'credentialless');
+    // AI model files (fetched by the AI workers without the session token; only allow-listed public models).
+    if (url.pathname.startsWith('/models/')) return await serveModel(req, res, decodeURIComponent(url.pathname.slice(8)));
     if (url.pathname.startsWith('/api/')) {
       const tok = req.headers['x-lightbench'] || url.searchParams.get('t');
       if (tok !== TOKEN) return send(res, 401, { error: 'bad token' });

@@ -40,6 +40,8 @@ async function launch() {
   let url;
   try {
     process.env.LIGHTBENCH_PORT = String(PORT);
+    // AI models live with the app's own data (not in the photo library folder).
+    if (!process.env.LIGHTBENCH_MODELS) process.env.LIGHTBENCH_MODELS = path.join(app.getPath('userData'), 'models');
     ({ url } = await require('./server.js').start({ port: PORT }));
   } catch (e) {
     dialog.showErrorBox('Lightbench', e.code === 'EADDRINUSE'

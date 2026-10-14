@@ -162,7 +162,7 @@
           <a class="btn primary" data-file="Lightbench-mac-x64.dmg">Download for Intel Mac <small data-size></small></a>
         </div>
       </div>
-      <p class="req" style="margin-top:22px">Recommended: 8 GB RAM, a graphics card with WebGPU support (most from 2016 onwards). AI features download their models (~50–200 MB each) on first use.<br>
+      <p class="req" style="margin-top:22px">Recommended: 8 GB RAM, a graphics card with WebGPU support (most from 2016 onwards). On first launch Lightbench offers to download its AI models (about 600 MB, once) so every AI feature works offline.<br>
         By downloading you agree to the <a href="legal.html?doc=LICENSE.txt">license agreement</a>. <a id="all-releases" href="#">All versions & release notes</a></p>
     </div>
   </section>
@@ -175,14 +175,15 @@
       <details><summary>macOS says Lightbench “can't be opened” or “is damaged”</summary>
         <ol>
           <li>Open the downloaded .dmg and drag <b>Lightbench</b> to <b>Applications</b>.</li>
-          <li>In Applications, <b>right-click Lightbench → Open</b>, then click <b>Open</b> again. (Or: System Settings → Privacy &amp; Security → <b>Open Anyway</b>.)</li>
-          <li>If macOS still says it's damaged, open Terminal and run <kbd>xattr -cr /Applications/Lightbench.app</kbd>, then open it again.</li>
+          <li>Open Lightbench. When macOS says it can't be opened, click <b>Done</b>.</li>
+          <li>Open <b>System Settings → Privacy &amp; Security</b>, scroll down and click <b>Open Anyway</b> next to Lightbench, then confirm. (On macOS 14 and older you can instead <b>right-click Lightbench → Open</b>.)</li>
+          <li>If macOS says Lightbench <b>is damaged</b>, open Terminal and run<br><kbd>xattr -cr /Applications/Lightbench.app &amp;&amp; codesign --force --deep -s - /Applications/Lightbench.app</kbd><br>then open it again.</li>
         </ol>
-        <p>You only need to do this once. It happens because Lightbench isn't signed with a paid Apple developer certificate yet.</p></details>
+        <p>You only need to do this once. It happens because Lightbench isn't signed with a paid Apple developer certificate yet — the app itself is safe and runs entirely on your Mac.</p></details>
       <details><summary>Which Mac download do I need?</summary><p>Apple menu → <b>About This Mac</b>. If it says <b>Chip: Apple M…</b>, choose Apple silicon; if it says <b>Processor: Intel</b>, choose Intel.</p></details>
       <details><summary>Which cameras and file types are supported?</summary><p>JPEG, PNG, WebP, TIFF, and RAW files from almost every camera: Nikon NEF, Canon CR2/CR3, Sony ARW, Fujifilm RAF, Olympus ORF, Panasonic RW2, Pentax PEF, DNG and more.</p></details>
       <details><summary>Does Lightbench change my original photos?</summary><p>Never. Lightbench reads photos where they are and stores edits in its own catalog (in your Pictures folder). Exporting creates new files.</p></details>
-      <details><summary>Do the AI features need the internet?</summary><p>Only once: the first time you use an AI feature, its model is downloaded and cached. After that it runs offline, entirely on your computer.</p></details>
+      <details><summary>Do the AI features need the internet?</summary><p>Only once. On first launch Lightbench offers to download all its AI models (about 600 MB) in the background — you can keep working meanwhile. After that every AI feature runs offline, entirely on your computer. You can also manage them any time in <i>Lightbench menu → AI Models</i>.</p></details>
     </div>
   </section>
 </main>

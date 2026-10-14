@@ -198,6 +198,7 @@ $('.brand').addEventListener('click', (e) => contextMenu(e.clientX, e.clientY + 
   { label: 'Welcome Guide', action: () => showWelcome({ openImport }) },
   { label: 'Keyboard Shortcuts', key: '?', action: showHelp },
   { label: 'Send Feedback / Report a Problem…', action: () => showFeedback() },
+  { label: 'AI Models…', action: () => import('./models.js').then((m) => m.showModels()) },
   { label: 'Check for Updates…', action: () => checkForUpdates({ manual: true }) },
   { label: 'About & Licenses…', action: () => showAbout() },
 ]));
@@ -241,8 +242,17 @@ async function showAbout() {
   lib.enter();
   renderFilmstrip();
   // First launch: the welcome guide. Otherwise a quiet daily update check once things have settled.
-  if (!prefs.get('welcome:v1', false)) setTimeout(() => showWelcome({ openImport }), 600);
+  if (!prefs.get('welcome:v1', false)) setTimeout(() => showWelcome({ openImport, firstRun: true }), 600);
   else setTimeout(() => checkForUpdates().catch(() => {}), 8000);
+  // AI models: move any from the old in-browser cache to the model store, then (once) suggest the offline download.
+  setTimeout(async () => {
+    const M = await import('./models.js');
+    await M.migrateBrowserCache();
+    if (prefs.get('welcome:v1', false) && !prefs.get('models:offered', false) && !(await M.allReady())) {
+      prefs.set('models:offered', true);
+      toast(el('span', {}, 'New: AI features can now work offline. ', el('a', { href: '#', class: 'toast-link', onclick: (e) => { e.preventDefault(); M.showModels(); } }, 'Download them')), false, 12000);
+    }
+  }, 3000);
   // resume any photos whose previews never finished
   // (also upgrades RAW photos imported before true RAW decoding existed)
   const broken = Object.values(C.photos).filter((p) => !p.master && ((!p.previewReady && !p.error) || (p.raw && !p.rawMode)));

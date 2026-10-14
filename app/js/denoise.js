@@ -74,7 +74,7 @@ const TILE = 768, OV = 32;
 export async function runDenoise(p, { model = 'natural', loadSource, onProgress, isCancelled } = {}) {
   if (!HAS_F16) throw new Error('This version of the app is too old for AI Denoise (needs Float16 support).');
   const base = C.photos[srcId(p)] || p;
-  const { ep } = await call('load', { model });
+  const { ep, fixed } = await call('load', { model });
   const src = await loadSource(base, { full: true, noDenoise: true });
   const { w, h, data } = toFloatRGB(src);
   // headroom scale (RAW values above 1 = highlights beyond sensor white)
@@ -90,7 +90,8 @@ export async function runDenoise(p, { model = 'natural', loadSource, onProgress,
   for (const y0 of ys) for (const x0 of xs) {
     if (isCancelled && isCancelled()) throw new Error('cancelled');
     const tw = Math.min(TILE, w - x0), th = Math.min(TILE, h - y0);
-    const pw = Math.ceil(tw / 8) * 8, ph = Math.ceil(th / 8) * 8; // pad to multiple of 8 (edge clamp)
+    // pad (edge clamp) to a multiple of 8, or to the exact tile size for the fixed-size model
+    const pw = fixed ? fixed : Math.ceil(tw / 8) * 8, ph = fixed ? fixed : Math.ceil(th / 8) * 8;
     const inp = new Float32Array(3 * pw * ph);
     for (let y = 0; y < ph; y++) {
       const sy = y0 + Math.min(y, th - 1);

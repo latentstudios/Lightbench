@@ -89,7 +89,7 @@ function setTool(name, silent) {
   let t = null;
   if (name === 'crop') t = cropTool(D);
   else if (name === 'spot') t = spotTool(D);
-  else if (name === 'mask') t = maskToolFor(activeMask());
+  else if (name === 'mask') { t = maskToolFor(activeMask()); AI.prewarm(); }
   else if (name === 'wb') t = pickTool(wbPick);
   D.tool = t;
   v.setTool(t);

@@ -11,8 +11,9 @@ There is no account, no cloud sync, no analytics and no telemetry.
 ## What Lightbench downloads from the internet
 These are ordinary downloads. No photos or personal data are sent; the servers see only your
 IP address and the file requested, as with any download.
-- **AI models**, once, the first time you use an AI feature: from Hugging Face (huggingface.co).
-- **Code libraries** for AI, metadata and maps: from the jsDelivr CDN (cdn.jsdelivr.net).
+- **AI models**, once: when you choose to download them (on first launch or in *Lightbench menu → AI Models*),
+  or the first time you use an AI feature. From Hugging Face (huggingface.co) and from Lightbench's releases
+  on GitHub (github.com). They are stored on your computer, so AI features then work offline.
 - **Map tiles**, only when you open the Map module: from OpenStreetMap (tile.openstreetmap.org).
 - **Update check**, at most once a day: Lightbench asks GitHub (api.github.com) for the latest version
   number. Only the app's version is included. Turn it off in *Lightbench menu → Check for Updates…*.

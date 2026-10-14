@@ -1,7 +1,7 @@
 {
   "name": "lightbench",
   "productName": "Lightbench",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Lightbench — photo library, RAW editor and AI masking for Windows and macOS",
   "main": "desktop.js",
   "private": true,
@@ -47,7 +47,10 @@
       "category": "public.app-category.photography",
       "artifactName": "Lightbench-mac-${arch}.${ext}",
       "minimumSystemVersion": "12.0",
-      "darkModeSupport": true
+      "darkModeSupport": true,
+      "identity": "-",
+      "hardenedRuntime": false,
+      "gatekeeperAssess": false
     },
     "dmg": {
       "title": "Lightbench",

@@ -34,8 +34,9 @@ jobs:
       - name: Build
         run: npx electron-builder ${{ matrix.target }} --publish never
         env:
-          # No Apple Developer certificate yet: build an unsigned app (users right-click → Open the first time).
-          # When you have one, add CSC_LINK / CSC_KEY_PASSWORD / APPLE_ID / APPLE_APP_SPECIFIC_PASSWORD / APPLE_TEAM_ID secrets.
+          # No Apple Developer certificate yet: the Mac app is ad-hoc signed ("identity": "-" in package.json), so macOS
+          # asks users to allow it once (Privacy & Security → Open Anyway) instead of calling it "damaged".
+          # With a certificate, remove "identity" and add CSC_LINK / CSC_KEY_PASSWORD / APPLE_ID / APPLE_APP_SPECIFIC_PASSWORD / APPLE_TEAM_ID secrets.
           CSC_IDENTITY_AUTO_DISCOVERY: false
       - uses: actions/upload-artifact@v5
         with:

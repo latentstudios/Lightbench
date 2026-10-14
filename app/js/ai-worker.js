@@ -2,10 +2,14 @@
 import {
   env, pipeline, AutoModel, AutoProcessor, RawImage, SamModel, Tensor, AutoTokenizer,
   CLIPTextModelWithProjection, CLIPVisionModelWithProjection,
-} from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1';
+} from '../vendor/transformers/transformers.min.js'; // @huggingface/transformers 3.8.1, bundled for offline use
 
+// Models come from Lightbench's local model store (downloaded once, then offline) — see server.js "AI model store".
 env.allowLocalModels = false;
-env.useBrowserCache = true;
+env.remoteHost = self.location.origin + '/models/hf/';
+env.remotePathTemplate = '{model}/resolve/{revision}/';
+env.useBrowserCache = false;
+env.backends.onnx.wasm.wasmPaths = self.location.origin + '/vendor/transformers/';
 
 let gpuOK = null;
 async function hasGPU() {

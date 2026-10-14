@@ -228,6 +228,16 @@ export async function presentRegions(p) {
   return run('present', { url: prevUrl(p) });
 }
 export function warmSAM(p) { return loadPreview(p).then(() => run('samEmbed', { url: prevUrl(p) })); }
+// Opening the Masking panel loads the one-click mask models in the background (only if already downloaded),
+// so the first Subject / Sky click doesn't wait for model loading.
+let prewarmed = false;
+export async function prewarm() {
+  if (prewarmed) return; prewarmed = true;
+  try {
+    const { packReady } = await import('./models.js');
+    for (const [pack, which] of [['subject', 'subject'], ['scene', 'panoptic']]) if (await packReady(pack)) await run('warm', { which });
+  } catch { prewarmed = false; }
+}
 
 // ---------- vocabulary for auto-tagging ----------
 const VOCAB = {

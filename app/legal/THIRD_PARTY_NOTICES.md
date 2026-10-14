@@ -27,10 +27,16 @@ the WebAssembly build used by Lightbench is available from <https://github.com/y
 | [CLIP ViT-B/32](https://github.com/openai/CLIP) ([ONNX](https://huggingface.co/Xenova/clip-vit-base-patch32)) | Auto-tagging, natural-language search | MIT | OpenAI |
 | [SCUNet](https://github.com/cszn/SCUNet) ([ONNX](https://huggingface.co/Heliosoph/scunet-onnx)) | AI Denoise | Apache-2.0 | Kai Zhang et al. |
 
+**Modified files:** Lightbench's optimized SCUNet builds (`scunet_color_real_psnr_768_fp16.onnx`,
+`scunet_color_real_gan_768_fp16.onnx`) were derived by Latent Studios from the ONNX export above: the input
+size was fixed to 768×768, shape computations were pre-computed (ONNX Runtime basic graph optimization) and
+weights were converted to 16-bit floating point. They remain under the Apache License 2.0.
+
 ## Online services
 
 - **Map tiles** © [OpenStreetMap contributors](https://www.openstreetmap.org/copyright), data under the ODbL.
-- Models and some libraries are downloaded from Hugging Face and the jsDelivr CDN on first use.
+- AI models are downloaded once from Hugging Face and from Lightbench's GitHub releases, then stored on
+  your computer. All code libraries are included with the app.
 
 ## License texts
 

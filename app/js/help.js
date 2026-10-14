@@ -128,8 +128,14 @@ function showUpdate(r) {
 }
 
 // ---------- welcome guide ----------
-export function showWelcome({ openImport } = {}) {
+export function showWelcome({ openImport, firstRun = false } = {}) {
   prefs.set('welcome:v1', true);
+  if (firstRun) prefs.set('models:offered', true);
+  // First launch: offer to fetch every AI model now, so all AI features work offline straight away.
+  const dl = el('input', { type: 'checkbox', checked: true });
+  const aiBox = firstRun ? el('label', { class: 'welcome-ai' }, dl, el('span', {},
+    el('b', {}, 'Download the AI features now (about 600 MB)'), el('br'),
+    'Recommended. Runs in the background — keep working while it downloads. Afterwards every AI tool works offline.')) : null;
   const card = (ic, title, text) => el('div', { class: 'welcome-card' }, el('div', { class: 'wc-icon' }, icon(ic, { cls: 'lg' })), el('b', {}, title), el('p', {}, text));
   modal('Welcome to Lightbench', el('div', { class: 'welcome' },
     el('div', { class: 'welcome-hero' },
@@ -140,12 +146,14 @@ export function showWelcome({ openImport } = {}) {
       card('import', '1 · Import', 'Click Import (or drag a folder onto the window). Lightbench reads photos where they are — nothing is moved or copied, and originals are never changed.'),
       card('grid', '2 · Library', 'Sort your shots: 1–5 for stars, P to pick, X to reject, 6–9 for colour labels. Use the filter bar and AI search to find anything.'),
       card('sun', '3 · Develop', 'Press D to edit. Light, colour, curves, crop, healing and AI Denoise — all non-destructive, with full undo history.'),
-      card('mask', '4 · AI Masking', 'Press M, then Subject, Sky, Background or People to select it in one click. The first time, the AI model downloads once (a few seconds to a minute).'),
+      card('mask', '4 · AI Masking', 'Press M, then Subject, Sky, Background or People to select it in one click. Or click any object to select just that.'),
       card('export', '5 · Export', `${keyLabel('Ctrl+Shift+E')} saves finished JPEG, PNG or WebP files wherever you like, at any size — with presets for web and Instagram.`),
       card('help', 'Need help?', 'Press ? for all keyboard shortcuts. Found a bug or have an idea? Use Send Feedback in the Lightbench menu.'),
     ),
+    aiBox,
   ), {
     cls: 'welcome-modal',
+    onClose: () => { if (aiBox && dl.checked) import('./models.js').then((m) => m.downloadAll()).catch((e) => toast('AI download failed: ' + e.message, true)); },
     buttons: [
       { label: 'Explore First' },
       { label: 'Import Photos…', cls: 'primary', onClick: () => setTimeout(() => openImport?.(), 50) },

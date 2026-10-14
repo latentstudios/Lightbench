@@ -28,6 +28,17 @@ Everything is free: GitHub hosts the code, builds the Windows **and** Mac instal
 3. ~15 minutes later the Windows installer and both Mac disk images appear under **Releases**, and the
    website's download buttons automatically point to them (they always link to the latest release).
 
+## Optimized AI Denoise models (one-time upload)
+
+Lightbench's faster AI Denoise models are too big for the code repository, so they live in their own
+GitHub release. The app falls back to the original (slower) model until they're uploaded.
+
+1. On github.com: **Releases → Draft a new release**.
+2. *Choose a tag* → type `models-v1` → *Create new tag*. Title: `AI models (v1)`.
+3. Drag in both files from the `model-uploads` folder: `scunet_color_real_psnr_768_fp16.onnx` and
+   `scunet_color_real_gan_768_fp16.onnx`.
+4. **Tick "Set as a pre-release"** (so the website keeps pointing at the real app release), then **Publish release**.
+
 The download file names are fixed so the website never needs editing:
 `Lightbench-Setup-win-x64.exe`, `Lightbench-mac-arm64.dmg` (Apple silicon), `Lightbench-mac-x64.dmg` (Intel).
 

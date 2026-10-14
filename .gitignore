@@ -1,3 +1,5 @@
 node_modules/
 dist/
 website/legal/
+# large model files: upload them to the "models-v1" GitHub release instead (see PUBLISHING.md)
+model-uploads/

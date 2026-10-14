@@ -1,5 +1,5 @@
 // Previews, thumbnails, EXIF, import pipeline, background thumbnail rendering.
-import exifr from 'https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/full.esm.mjs';
+import exifr from '../vendor/exifr/full.esm.mjs'; // exifr 7.1.3, bundled for offline use
 import { api } from './api.js';
 import { C, S, P, save, emit, uid, srcId, getSettings } from './store.js';
 import { Engine } from './engine.js';
