@@ -38,7 +38,7 @@
   });
   if (os) {
     document.getElementById('hero-dl-label').textContent = labels[os];
-    const file = document.querySelector(`.dl[data-os="${os}"] a`);
+    const file = document.querySelector(`.dl[data-os="${os}"] a[data-file]`); // the installer link, not the help links in the card
     document.getElementById('hero-dl').href = file.href;
   }
   // ----- support / donations -----
