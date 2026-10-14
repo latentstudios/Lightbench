@@ -1,0 +1,20 @@
+name: 💡 Feature idea
+description: Suggest something that would make Lightbench better.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like Lightbench to do?
+      placeholder: Let me sync the same crop across a whole burst of photos.
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why would it help you?
+      description: How you'd use it in your own workflow — this helps decide what to build first.
+  - type: textarea
+    id: extra
+    attributes:
+      label: Examples or screenshots (optional)

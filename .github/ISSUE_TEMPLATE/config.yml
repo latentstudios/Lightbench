@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 💬 Questions & install help (Discord)
+    url: https://discord.gg/QrBpnTrtP
+    about: Ask in #help — the quickest way to get unstuck, and where you can show off your edits.
+  - name: 📖 Install help (Windows & Mac warnings)
+    url: https://github.com/latentstudios/lightbench#installing
+    about: “Windows protected your PC” or macOS “damaged / can't be opened”? The fix is here.
+  - name: ✉️ Email Latent Studios
+    url: https://latentstudios.github.io/lightbench/#faq
+    about: For anything you'd rather not post publicly, email latentstudios.hq@gmail.com

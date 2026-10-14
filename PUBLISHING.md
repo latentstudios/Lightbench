@@ -61,3 +61,16 @@ The download file names are fixed so the website never needs editing:
 ## Windows "unknown publisher" warning
 
 Same idea: an Authenticode code-signing certificate removes the SmartScreen warning. Optional.
+
+## Before each release
+1. Build and launch the packaged app locally (`npx electron-builder --win dir`, then run `dist\win-unpacked\Lightbench.exe`)
+   — some bugs only show up in the installed app, not when running from source.
+2. After the Release workflow, install from the website and smoke-test (import, AI mask, AI Denoise, export).
+3. Upload the new installer to virustotal.com and submit it at microsoft.com/wdsi/filesubmission ("Software developer").
+4. Post in Discord #announcements.
+
+## Good to know
+- If many people use the Map module, switch to a commercial tile provider with a free tier (MapTiler, Stadia,
+  Thunderforest); OpenStreetMap's own tile servers don't allow heavy app use.
+- Don't use other companies' product names or logos in the app name, icon or marketing.
+- Website and README screenshots use the author's own photos (`website/assets/`); replace them freely.

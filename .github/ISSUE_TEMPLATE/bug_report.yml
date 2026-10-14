@@ -1,0 +1,58 @@
+name: 🐞 Bug report
+description: Something in Lightbench doesn't work as it should.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this! Tip: *Lightbench menu → Send Feedback / Report a Problem* in the app fills in your version and system details automatically.
+        **Install problems** (“Windows protected your PC”, macOS “damaged” / “can't be opened”)? See the [install help](https://github.com/latentstudios/lightbench#installing) or ask in [Discord #help](https://discord.gg/QrBpnTrtP).
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you do, and what went wrong?
+      placeholder: When I export a NEF as JPEG, the progress bar stops at 50%.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Import a folder of NEF files
+        2. Select one and press Ctrl+Shift+E
+        3. …
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect to happen?
+  - type: input
+    id: version
+    attributes:
+      label: Lightbench version
+      description: Lightbench menu (top-left) → About & Licenses
+      placeholder: "1.1.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - Windows 11
+        - Windows 10
+        - macOS (Apple silicon)
+        - macOS (Intel)
+    validations:
+      required: true
+  - type: input
+    id: camera
+    attributes:
+      label: Camera / file type (if it's about a specific photo)
+      placeholder: Nikon D3500, .NEF
+  - type: textarea
+    id: extra
+    attributes:
+      label: Screenshots or anything else
+      description: Drag screenshots in here. Please don't upload photos you don't want to be public.
