@@ -151,6 +151,33 @@ async function uniquePath(p) {
   while (true) { try { await fsp.access(candidate); candidate = `${base}-${i++}${ext}`; } catch { return candidate; } }
 }
 
+// ---------- update check ----------
+// Asks GitHub for the latest release (no personal data is sent) and picks the installer for this computer.
+const PKG = require('./package.json');
+const REPO = `${PKG.build.publish.owner}/${PKG.build.publish.repo}`;
+const newer = (a, b) => { // is version a newer than b?
+  const pa = String(a).replace(/^v/, '').split(/[.-]/).map((n) => parseInt(n, 10) || 0), pb = String(b).replace(/^v/, '').split(/[.-]/).map((n) => parseInt(n, 10) || 0);
+  for (let i = 0; i < 3; i++) if ((pa[i] || 0) !== (pb[i] || 0)) return (pa[i] || 0) > (pb[i] || 0);
+  return false;
+};
+async function checkForUpdate() {
+  const current = PKG.version;
+  try {
+    const r = await fetch(`https://api.github.com/repos/${REPO}/releases/latest`, {
+      headers: { 'User-Agent': 'Lightbench/' + current, Accept: 'application/vnd.github+json' }, signal: AbortSignal.timeout(10000) });
+    if (r.status === 404) return { current, latest: null, available: false };
+    if (!r.ok) return { current, error: 'GitHub answered ' + r.status };
+    const rel = await r.json();
+    const latest = String(rel.tag_name || '').replace(/^v/, '');
+    const want = process.platform === 'win32' ? 'Lightbench-Setup-win-x64.exe' : process.platform === 'darwin' ? `Lightbench-mac-${process.arch}.dmg` : null;
+    const asset = (rel.assets || []).find((a) => a.name === want);
+    return { current, latest, available: newer(latest, current), name: rel.name || 'Lightbench ' + latest, notes: String(rel.body || '').slice(0, 6000),
+      page: rel.html_url || `https://github.com/${REPO}/releases/latest`, download: asset ? asset.browser_download_url : null, size: asset ? asset.size : 0 };
+  } catch (e) {
+    return { current, error: e.name === 'TimeoutError' ? 'No answer from GitHub (are you offline?)' : e.message };
+  }
+}
+
 let lastBackup = 0;
 async function writeCatalog(buf) {
   JSON.parse(buf.toString('utf8')); // validate
@@ -167,8 +194,10 @@ async function api(req, res, url) {
   const route = url.pathname.slice(5);
   if (route === 'info') {
     const pics = path.join(os.homedir(), 'Pictures');
-    return send(res, 200, { home: os.homedir(), pictures: fs.existsSync(pics) ? pics : os.homedir(), dataDir: DATA_DIR, sep: path.sep, raw: [...RAW_EXT] });
+    return send(res, 200, { home: os.homedir(), pictures: fs.existsSync(pics) ? pics : os.homedir(), dataDir: DATA_DIR, sep: path.sep, raw: [...RAW_EXT],
+      version: PKG.version, platform: process.platform, arch: process.arch, osRelease: os.release(), electron: process.versions.electron || '' });
   }
+  if (route === 'update-check') return send(res, 200, await checkForUpdate());
   if (route === 'drives') {
     const drives = [];
     if (process.platform === 'win32') {

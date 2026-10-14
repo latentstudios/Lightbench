@@ -14,8 +14,16 @@ IP address and the file requested, as with any download.
 - **AI models**, once, the first time you use an AI feature: from Hugging Face (huggingface.co).
 - **Code libraries** for AI, metadata and maps: from the jsDelivr CDN (cdn.jsdelivr.net).
 - **Map tiles**, only when you open the Map module: from OpenStreetMap (tile.openstreetmap.org).
+- **Update check**, at most once a day: Lightbench asks GitHub (api.github.com) for the latest version
+  number. Only the app's version is included. Turn it off in *Lightbench menu → Check for Updates…*.
 
 If you never use the AI features or the Map module, Lightbench makes no internet requests for them.
+
+## Feedback
+*Send Feedback / Report a Problem* never sends anything by itself. It opens a pre-filled message in your
+browser (GitHub) or email app, which you can read and edit before sending. You choose whether to include
+the technical details shown (app version, operating system, graphics card, recent error messages — which
+can occasionally mention a file name, so glance over them first). No photos or catalog data are included.
 
 ## Location data
 If your photos contain GPS coordinates, Lightbench shows them on the map. Coordinates are only

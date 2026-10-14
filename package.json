@@ -1,7 +1,7 @@
 {
   "name": "lightbench",
   "productName": "Lightbench",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Lightbench — photo library, RAW editor and AI masking for Windows and macOS",
   "main": "desktop.js",
   "private": true,

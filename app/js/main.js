@@ -12,6 +12,9 @@ import ssMod from './slideshow.js';
 import printMod from './print.js';
 import * as A from './actions.js';
 import { openImport, openExport, importDropped } from './dialogs.js';
+import { mdToHtml } from './markdown.js';
+import { installErrorCapture, showFeedback, checkForUpdates, showWelcome } from './help.js';
+installErrorCapture();
 
 const MODULES = { library: lib, develop: dev, map: mapMod, slideshow: ssMod, print: printMod };
 
@@ -192,30 +195,15 @@ $('.brand').addEventListener('click', (e) => contextMenu(e.clientX, e.clientY + 
   { label: 'Re-render All Thumbnails', action: () => { for (const id of Object.keys(C.photos)) queueThumb(id); toast('Rebuilding thumbnails in the background'); } },
   { label: 'Show Catalog Folder', action: async () => { const { api } = await import('./api.js'); api.reveal(S.info.dataDir); } },
   '-',
+  { label: 'Welcome Guide', action: () => showWelcome({ openImport }) },
   { label: 'Keyboard Shortcuts', key: '?', action: showHelp },
+  { label: 'Send Feedback / Report a Problem…', action: () => showFeedback() },
+  { label: 'Check for Updates…', action: () => checkForUpdates({ manual: true }) },
   { label: 'About & Licenses…', action: () => showAbout() },
 ]));
 $('.brand').style.cursor = 'pointer';
 
 // ---------- About & Licenses ----------
-// Minimal Markdown → HTML for the bundled legal documents (headings, tables, lists, links, bold, code).
-function mdToHtml(md) {
-  const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  const inline = (s) => esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/`(.+?)`/g, '<code>$1</code>')
-    .replace(/\[([^\]]+)\]\((https?:[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>').replace(/&lt;(https?:[^&]+)&gt;/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
-  const out = []; const lines = md.split(/\r?\n/);
-  for (let i = 0; i < lines.length; i++) {
-    const l = lines[i];
-    if (/^#{1,3} /.test(l)) { const n = l.match(/^#+/)[0].length; out.push(`<h${n + 1}>${inline(l.slice(n + 1))}</h${n + 1}>`); }
-    else if (/^\|/.test(l)) {
-      const rows = []; while (i < lines.length && /^\|/.test(lines[i])) rows.push(lines[i++]); i--;
-      const cells = (r) => r.split('|').slice(1, -1).map((c) => c.trim());
-      out.push('<table class="legal-table"><tr>' + cells(rows[0]).map((c) => `<th>${inline(c)}</th>`).join('') + '</tr>' + rows.slice(2).map((r) => '<tr>' + cells(r).map((c) => `<td>${inline(c)}</td>`).join('') + '</tr>').join('') + '</table>');
-    } else if (/^- /.test(l)) { const items = []; while (i < lines.length && /^- /.test(lines[i])) items.push(lines[i++].slice(2)); i--; out.push('<ul>' + items.map((t) => `<li>${inline(t)}</li>`).join('') + '</ul>'); }
-    else if (l.trim()) { const para = [l]; while (i + 1 < lines.length && lines[i + 1].trim() && !/^(#|\||- )/.test(lines[i + 1])) para.push(lines[++i]); out.push(`<p>${inline(para.join(' '))}</p>`); }
-  }
-  return out.join('');
-}
 async function showAbout() {
   const doc = el('div', { class: 'legal' });
   const load = async (file) => {
@@ -252,6 +240,9 @@ async function showAbout() {
   document.body.dataset.module = 'library';
   lib.enter();
   renderFilmstrip();
+  // First launch: the welcome guide. Otherwise a quiet daily update check once things have settled.
+  if (!prefs.get('welcome:v1', false)) setTimeout(() => showWelcome({ openImport }), 600);
+  else setTimeout(() => checkForUpdates().catch(() => {}), 8000);
   // resume any photos whose previews never finished
   // (also upgrades RAW photos imported before true RAW decoding existed)
   const broken = Object.values(C.photos).filter((p) => !p.master && ((!p.previewReady && !p.error) || (p.raw && !p.rawMode)));

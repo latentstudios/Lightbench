@@ -22,7 +22,8 @@ Everything is free: GitHub hosts the code, builds the Windows **and** Mac instal
 
 ## Releasing a version
 
-1. Change `"version"` in `package.json` (e.g. `1.0.1`) and commit + push in GitHub Desktop.
+1. Change `"version"` in `package.json` (e.g. `1.0.2`), write what changed in `RELEASE_NOTES.md`
+   (people see it on the Releases page and in the app's *Update Available* window), then commit + push in GitHub Desktop.
 2. On github.com: **Actions → Release → Run workflow**.
 3. ~15 minutes later the Windows installer and both Mac disk images appear under **Releases**, and the
    website's download buttons automatically point to them (they always link to the latest release).

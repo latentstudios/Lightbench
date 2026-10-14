@@ -62,9 +62,26 @@ async function launch() {
   if (st?.maximized !== false) win.maximize();
   win.once('ready-to-show', () => win.show());
 
-  // Links (e.g. map attribution) open in the normal browser, never inside the app.
-  win.webContents.setWindowOpenHandler(({ url: u }) => { if (/^https?:/.test(u)) shell.openExternal(u); return { action: 'deny' }; });
-  win.webContents.on('will-navigate', (e, u) => { if (!u.startsWith(url)) { e.preventDefault(); if (/^https?:/.test(u)) shell.openExternal(u); } });
+  // Links (e.g. map attribution, feedback email) open in the normal browser / mail app, never inside the app.
+  const external = (u) => /^(https?|mailto):/.test(u);
+  win.webContents.setWindowOpenHandler(({ url: u }) => { if (external(u)) shell.openExternal(u); return { action: 'deny' }; });
+  win.webContents.on('will-navigate', (e, u) => { if (!u.startsWith(url)) { e.preventDefault(); if (external(u)) shell.openExternal(u); } });
+
+  // If the window's page crashes, offer to reload (the catalog is saved continuously) or report it.
+  win.webContents.on('render-process-gone', async (_e, details) => {
+    if (details.reason === 'clean-exit' || !win) return;
+    const { response } = await dialog.showMessageBox(win, {
+      type: 'error', title: 'Lightbench', buttons: ['Reload', 'Report Problem', 'Quit'], defaultId: 0, cancelId: 2,
+      message: 'Lightbench stopped unexpectedly.',
+      detail: `Your catalog and edits are saved. Reload to carry on.\n\n(${details.reason}, code ${details.exitCode})`,
+    });
+    if (response === 1) {
+      const pkg = require('./package.json');
+      const body = `What were you doing when it happened?\n\n\n---\nLightbench ${pkg.version}\n${process.platform} ${require('os').release()} (${process.arch})\nCrash: ${details.reason}, code ${details.exitCode}`;
+      shell.openExternal(`https://github.com/${pkg.build.publish.owner}/${pkg.build.publish.repo}/issues/new?title=${encodeURIComponent('[Crash] Lightbench stopped unexpectedly')}&body=${encodeURIComponent(body)}`);
+    }
+    if (response === 2) { flushed = true; app.quit(); } else if (win) win.reload();
+  });
 
   // Developer tools (Ctrl+Alt+Shift+I) and reload (Ctrl+F5) remain available for troubleshooting.
   win.webContents.on('before-input-event', (e, input) => {
