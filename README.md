@@ -11,6 +11,7 @@
   <a href="https://github.com/latentstudios/lightbench/releases/latest"><img alt="Latest version" src="https://img.shields.io/github/v/release/latentstudios/lightbench?label=version&color=e8a33d&style=for-the-badge"></a>
   <a href="https://github.com/latentstudios/lightbench/releases"><img alt="Downloads" src="https://img.shields.io/github/downloads/latentstudios/lightbench/total?color=2b2b2b&style=for-the-badge"></a>
   <a href="https://discord.gg/QrBpnTrtP"><img alt="Discord" src="https://img.shields.io/badge/Discord-join-5865F2?logo=discord&logoColor=white&style=for-the-badge"></a>
+  <a href="https://www.virustotal.com/gui/file/d0101ac366e4fd4d909fe5c2ab67addb695c058c6205159da424a16f0734674b/detection"><img alt="VirusTotal: clean" src="https://img.shields.io/badge/VirusTotal-clean-3fb950?logo=virustotal&logoColor=white&style=for-the-badge"></a>
   <a href="https://buymeacoffee.com/latentstudios"><img alt="Buy us a coffee" src="https://img.shields.io/badge/Buy%20us%20a%20coffee-%E2%98%95-FFDD00?style=for-the-badge&labelColor=2b2b2b"></a>
 </p>
 

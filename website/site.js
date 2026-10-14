@@ -44,6 +44,7 @@
   // ----- support / donations -----
   if (cfg.donate) document.querySelectorAll('[data-donate]').forEach((a) => { a.href = cfg.donate; });
   document.querySelectorAll('[data-discord]').forEach((a) => { if (cfg.discord) a.href = cfg.discord; else a.remove(); });
+  if (cfg.virustotal) { const vt = document.getElementById('vt-badge'); vt.querySelector('a').href = cfg.virustotal; vt.hidden = false; }
   document.querySelectorAll('[data-email]').forEach((a) => { if (cfg.email) { a.href = 'mailto:' + cfg.email; a.title = cfg.email; } else a.remove(); });
   const g = cfg.goal;
   if (g && g.target) {
