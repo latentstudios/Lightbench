@@ -108,7 +108,18 @@ class Viewer {
     if (this.zoom === 'fill') { const [ow, oh] = this.engine.outputSize(this.s, this.ignoreCrop); return Math.max(cw / ow, ch / oh); }
     return this.zoom * dpr * this.origScale();
   }
+  // Side-by-side before/after: each half of the canvas shows the whole photo, fitted.
+  // Returns [beforeView, afterView, splitX]; view() reports the "after" one so tools and masks line up with it.
+  sideViews() {
+    const [cw, ch, dpr] = this._size();
+    const [ow, oh] = this.engine.outputSize(this.s, this.ignoreCrop);
+    const gap = Math.round(14 * dpr), pad = 18 * dpr, half = (cw - gap) / 2;
+    const sc = Math.min((half - 2 * pad) / ow, (ch - 2 * pad - 22 * dpr) / oh), w = ow * sc, h = oh * sc;
+    const y = (ch - h) / 2 + 10 * dpr; // a little room above for the labels
+    return [[(half - w) / 2, y, w, h], [half + gap + (half - w) / 2, y, w, h], Math.round(half + gap / 2)];
+  }
   view() {
+    if (this.before === 'side' && this.s) return this.sideViews()[1];
     const [cw, ch] = this._size();
     const [ow, oh] = this.engine.outputSize(this.s, this.ignoreCrop);
     const sc = this.scale(), w = ow * sc, h = oh * sc;
@@ -180,6 +191,10 @@ class Viewer {
       const mid = Math.round(cw / 2);
       this.engine.render(this.s, { ...opts, before: true, showMask: null, scissor: [0, 0, mid, ch] });
       this.engine.render(this.s, { ...opts, scissor: [mid, 0, cw - mid, ch] });
+    } else if (this.before === 'side') {
+      const [bv, av, mid] = this.sideViews();
+      this.engine.render(this.s, { ...opts, view: bv, before: true, showMask: null, scissor: [0, 0, mid, ch] });
+      this.engine.render(this.s, { ...opts, view: av, scissor: [mid, 0, cw - mid, ch] });
     } else this.engine.render(this.s, opts);
     this._overlay();
     clearTimeout(this._histTimer);
@@ -194,6 +209,12 @@ class Viewer {
       c.font = `${12 * devicePixelRatio}px Segoe UI`; c.fillStyle = '#fff'; c.shadowColor = '#000'; c.shadowBlur = 4;
       c.fillText('Before', x - 60 * devicePixelRatio, 20 * devicePixelRatio); c.fillText('After', x + 14 * devicePixelRatio, 20 * devicePixelRatio);
       c.shadowBlur = 0;
+    }
+    if (this.before === 'side' && this.s) {
+      const [bv, av] = this.sideViews(), dpr = devicePixelRatio || 1;
+      c.font = `600 ${13 * dpr}px Segoe UI`; c.fillStyle = '#e6e6e6'; c.textAlign = 'center';
+      c.fillText('Before', bv[0] + bv[2] / 2, bv[1] - 9 * dpr); c.fillText('After', av[0] + av[2] / 2, av[1] - 9 * dpr);
+      c.textAlign = 'start';
     }
     if (this.tool?.draw) this.tool.draw(c, this);
   }

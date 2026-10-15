@@ -709,7 +709,7 @@ on('zoom', () => drawNav());
 function renderToolbar() {
   const tb = $('#toolbar'); tb.innerHTML = '';
   const v = viewer();
-  const ba = seg([['off', [icon('image'), ' After'], 'Show your edit'], ['full', [icon('loupe'), ' Before'], 'Before (\\)'], ['split', [icon('beforeafter'), ' Split'], 'Before | After split (Y)']], v.before, (x) => { v.before = x; v.requestRender(); $('#ba-label').classList.toggle('hidden', x !== 'full'); $('#ba-label').textContent = 'Before'; });
+  const ba = seg([['off', [icon('image'), ' After'], 'Show your edit'], ['full', [icon('loupe'), ' Before'], 'Before (\\)'], ['side', [icon('compare'), ' Side by Side'], 'Before and After side by side (Y)'], ['split', [icon('beforeafter'), ' Split'], 'Before | After split on one photo (Shift+Y)']], v.before, (x) => { v.before = x; v.requestRender(); $('#ba-label').classList.toggle('hidden', x !== 'full'); $('#ba-label').textContent = 'Before'; });
   dev._ba = ba;
   tb.append(el('button', { class: 'btn small', title: 'Back to Library (G)', onclick: () => emit('module', 'library') }, icon('grid'), 'Library'), ba,
     el('button', { class: 'btn small' + (v.clipping ? ' active' : ''), title: 'Show clipping (J)', onclick: toggleClipping }, icon('clipping'), 'Clipping'),
@@ -760,7 +760,7 @@ dev.key = (e) => {
   if (k === 'j') { toggleClipping(); return true; }
   if (k === 'z') { v.toggleZoom(v.lastMouse); return true; }
   if (k === '\\') { v.before = v.before === 'full' ? 'off' : 'full'; dev._ba?.setValue(v.before); $('#ba-label').classList.toggle('hidden', v.before !== 'full'); $('#ba-label').textContent = 'Before'; v.requestRender(); return true; }
-  if (k === 'y') { v.before = v.before === 'split' ? 'off' : 'split'; dev._ba?.setValue(v.before); v.requestRender(); return true; }
+  if (k === 'y') { const m = e.shiftKey ? 'split' : 'side'; v.before = v.before === m ? 'off' : m; dev._ba?.setValue(v.before); $('#ba-label').classList.add('hidden'); v.requestRender(); return true; }
   if (k === 'o' && D.toolName === 'mask') { D.maskOverlay = !D.maskOverlay; prefs.set('maskOverlay2', D.maskOverlay); v.showMask = D.maskOverlay ? D.activeMask : null; v.requestRender(); renderToolPanel(); return true; }
   if (k === 'x' && D.toolName === 'crop') { swapCropOrientation(); return true; }
   if (k === 'enter' && D.toolName) { if (D.tool?.finish) D.tool.finish(); else setTool(null); return true; }

@@ -23,7 +23,8 @@
 <p align="center"><a href="https://latentstudios.github.io/lightbench/">Website</a> · <a href="#installing">Install help</a> · <a href="https://github.com/latentstudios/lightbench/releases">All versions</a></p>
 
 <p align="center">
-  <img src="website/assets/hero.jpg" alt="Lightbench's Develop module editing a photo of three sun conures" width="100%">
+  <img src="brand/demo/lightbench-demo.gif" alt="Demo: one click on Subject selects the swan, it's brightened; one click on Background darkens the water; before/after split" width="100%">
+  <br><sub>One click to select the subject, one click for the background — recorded at real speed.</sub>
 </p>
 
 ## What it does

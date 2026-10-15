@@ -168,7 +168,7 @@ function showHelp() {
     ['Ctrl+Shift+I', 'Import'], ['Ctrl+Shift+E', 'Export'], ['Ctrl+F', 'Search'], ['Ctrl+N', 'New collection'], ['Ctrl+R', 'Show in Explorer'],
     ['Delete', 'Remove from catalog / collection'], ['Tab / Shift+Tab', 'Hide panels'], ['F6 / F7 / F8', 'Filmstrip / left / right panel'], ['L', 'Lights dim / out'], ['F', 'Full screen'],
     ['I', 'Cycle loupe info'], ['Z / click', 'Zoom 1:1 ↔ fit'], ['Space+drag', 'Pan when zoomed'],
-    ['R', 'Crop & straighten'], ['Q', 'Spot removal / heal'], ['M', 'Masking'], ['W', 'White balance picker'], ['J', 'Clipping warning'], ['\\', 'Before / after'], ['Y', 'Before | after split'],
+    ['R', 'Crop & straighten'], ['Q', 'Spot removal / heal'], ['M', 'Masking'], ['W', 'White balance picker'], ['J', 'Clipping warning'], ['\\', 'Before / after'], ['Y', 'Before & after side by side'], ['Shift+Y', 'Before | after split'],
     ['O', 'Mask overlay'], ['[ ]', 'Brush / spot size'], ['Alt (painting)', 'Erase brush'], ['Ctrl+Z / Ctrl+Y', 'Undo / redo'], ['X (crop)', 'Swap crop orientation'], ['Ctrl+drag (crop)', 'Straighten along a line'],
   ];
   modal('Keyboard Shortcuts', el('div', { class: 'help-grid' }, keys.map(([k, d]) => el('div', {}, el('span', {}, d.replace('Show in Explorer', REVEAL_LABEL)), el('span', { class: 'kbd' }, keyLabel(k))))), { buttons: [{ label: 'Close', cls: 'primary' }] });
